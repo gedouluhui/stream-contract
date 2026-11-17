@@ -1,0 +1,10 @@
+include LICENSE README.md pyproject.toml MANIFEST.in
+include scripts/verify.py scripts/check_sdist.py scripts/check_openai_decoder.py
+include docs/demo-report.json docs/openai-decoder-2.36.0.json
+recursive-include src/streamcontract *.py
+recursive-include tests *.py
+prune artifacts
+prune .git
+prune .venv
+prune docs/superpowers
+global-exclude __pycache__ *.py[cod]
