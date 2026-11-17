@@ -1,0 +1,61 @@
+{
+  "sdk": "openai",
+  "version": "2.36.0",
+  "interface": "openai._streaming.SSEDecoder.iter_bytes (internal)",
+  "normalization": "missing event->message; missing id->empty string",
+  "note": "Offline decoder comparison, not a live API or general SDK compliance claim.",
+  "cases": [
+    {
+      "case": "unicode_crlf",
+      "wire_hex": "646174613a20736e6f773a20e99baa0d0a0d0a",
+      "reference": {
+        "status": "pass",
+        "checked": 22,
+        "available_single_cuts": 18,
+        "exhaustive_single_cuts": true,
+        "max_cases": 512,
+        "first_failure": null
+      },
+      "sdk": {
+        "status": "pass",
+        "checked": 22,
+        "available_single_cuts": 18,
+        "exhaustive_single_cuts": true,
+        "max_cases": 512,
+        "first_failure": null
+      }
+    },
+    {
+      "case": "leading_utf8_bom",
+      "wire_hex": "efbbbf646174613a20736e6f773a20e99baa0d0a0d0a",
+      "reference": {
+        "status": "pass",
+        "checked": 25,
+        "available_single_cuts": 21,
+        "exhaustive_single_cuts": true,
+        "max_cases": 512,
+        "first_failure": null
+      },
+      "sdk": {
+        "status": "fail",
+        "checked": 1,
+        "available_single_cuts": 21,
+        "exhaustive_single_cuts": false,
+        "max_cases": 512,
+        "first_failure": {
+          "chunk_sizes": [
+            22
+          ],
+          "expected": [
+            {
+              "data": "snow: \u96ea",
+              "event": "message",
+              "id": ""
+            }
+          ],
+          "actual": []
+        }
+      }
+    }
+  ]
+}
