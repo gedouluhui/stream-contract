@@ -73,7 +73,7 @@ No API request, OpenAI client initialization or credential lookup is performed b
 python -m pip install build setuptools wheel
 python scripts/verify.py
 python -m build --no-isolation
-python scripts/check_sdist.py dist/streamcontract-0.1.0.tar.gz
+python scripts/check_sdist.py dist/streamcontract-0.1.1.tar.gz
 ```
 
 Tests cover known SSE cases at every single cut, byte-at-a-time Unicode, incomplete endings, wrong types, budgets, multiple choices, unsupported tools, always-empty clients, replay, CLI exit codes and overwrite protection. Python 3.10+ syntax; local execution verified on Python 3.12.3. Optional SDK comparison is separate from the dependency-free suite.

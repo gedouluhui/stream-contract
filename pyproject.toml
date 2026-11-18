@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "streamcontract"
-version = "0.1.0"
+version = "0.1.1"
 description = "Offline stream boundary tests against explicit semantic oracles"
 readme = "README.md"
 requires-python = ">=3.10"

@@ -36,7 +36,7 @@ class QualityR3(unittest.TestCase):
 
     def test_large_oracle_integer_rejected_before_encoder(self):
         # Wrong fix to expose: check size only after JSONEncoder serialized the int.
-        with patch('streamcontract.audit.json.JSONEncoder.iterencode', side_effect=AssertionError('encoder reached')):
+        with patch.object(json.JSONEncoder, 'iterencode', side_effect=AssertionError('encoder reached')):
             with self.assertRaisesRegex(ValueError, 'integer'):
                 audit(b'x', lambda _: 0, 1 << 5000)
 
