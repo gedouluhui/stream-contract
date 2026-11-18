@@ -19,4 +19,4 @@ jobs:
       - run: python scripts/verify.py
       - run: python -m streamcontract demo
       - run: python -m build --no-isolation
-      - run: python scripts/check_sdist.py dist/streamcontract-0.1.0.tar.gz
+      - run: python -c "import glob,subprocess,sys; files=glob.glob('dist/*.tar.gz'); assert len(files)==1, files; sys.exit(subprocess.call([sys.executable,'scripts/check_sdist.py',files[0]]))"
