@@ -2,6 +2,7 @@
 from collections.abc import Callable, Iterable
 import json
 import math
+from .numbers import check_integer
 
 
 def _canonical(value):
@@ -15,7 +16,10 @@ def _canonical(value):
             if len(x) > 1048576:
                 raise ValueError('result string exceeds 1 MiB character budget')
             return
-        if x is None or type(x) in (bool, int):
+        if x is None or type(x) is bool:
+            return
+        if type(x) is int:
+            check_integer(x)
             return
         if type(x) is float and math.isfinite(x):
             return

@@ -48,12 +48,12 @@ Whole-stream and one-byte chunks are tested first, followed by single cuts and d
 ## What is supported?
 
 - **SSE framing:** incremental UTF-8 replacement decoding, one initial BOM, CR/LF/CRLF, comments, multi-line data, empty data, persistent IDs and discarded incomplete trailing events, following [WHATWG event-stream interpretation](https://html.spec.whatwg.org/multipage/server-sent-events.html#event-stream-interpretation).
-- **Chat text profile:** indexed text choices, role-only deltas, finish markers and optional empty-choices usage chunks. Missing `[DONE]` or unfinished choices is incomplete. Tool calls, refusals/other non-text deltas, named SSE events and Responses API streams are explicitly unsupported.
+- **Chat text profile:** indexed text choices, role-only deltas, supported terminal reasons (`stop`, `length`, `content_filter`) and optional empty-choices usage chunks. Missing `[DONE]` or unfinished choices is incomplete. An empty reason is a profile error; unknown/future reasons are unsupported, never silently complete. Tool calls, refusals/other non-text deltas, named SSE events and Responses API streams are explicitly unsupported.
 - **Independent oracle:** typed JSON comparison distinguishes `true` from `1` and rejects NaN/Infinity or non-JSON results. A local callable is trusted executable code, **not sandboxed**.
 
 The text collector intentionally checks a small behavior contract, not every OpenAI schema field. It ignores unrelated top-level fields. Completion means the supported choices finished and the profile's end marker was observed, not that the connection was healthy or the model answer correct. SSE framing, vendor schema, model-output validity and transport failure are different questions.
 
-Limits: parser 1 MiB total input and 65,536 characters per line/event by default; audit 65,536 input bytes and 512 cases by default (configurable 2..2,048). Result normalization is limited to 20,000 visited JSON nodes, depth 64 and 1 MiB of encoded JSON; oversized expected results are rejected and oversized client results become named failing cases. Inputs and adapters must terminate. Reports may contain input/output text; use synthetic fixtures before sharing them.
+Limits: parser 1 MiB total input and 65,536 characters per line/event by default; audit 65,536 input bytes and 512 cases by default (configurable 2..2,048). Result normalization is limited to 20,000 visited JSON nodes, depth 64 and 1 MiB of encoded JSON. Integers are limited to 4,096 magnitude bits **before** decimal encoding; incoming integer tokens also have a digit preflight. Nonfinite values, including overflow from `1e309`, are rejected during input parsing. Oversized expected results are rejected and oversized client results become named failing cases. Inputs and adapters must terminate. Reports may contain input/output text; use synthetic fixtures before sharing them.
 
 ## A real, offline SDK comparison
 

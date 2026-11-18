@@ -1,6 +1,7 @@
 """Deliberately narrow Chat Completions TEXT profile, not full API compliance."""
 import json
 from .sse import parse_sse
+from .numbers import parse_float, parse_integer
 
 
 def _reject_constant(_):
@@ -28,7 +29,8 @@ def collect_chat(chunks) -> dict:
             done = True
             continue
         try:
-            obj = json.loads(event['data'], parse_constant=_reject_constant)
+            obj = json.loads(event['data'], parse_constant=_reject_constant,
+                             parse_float=parse_float, parse_int=parse_integer)
         except (ValueError, RecursionError):
             return result('profile_error', 'invalid_json')
         if type(obj) is not dict or obj.get('object') != 'chat.completion.chunk' or type(obj.get('choices')) is not list:
@@ -49,7 +51,11 @@ def collect_chat(chunks) -> dict:
             delta, finish = item.get('delta'), item.get('finish_reason')
             if type(delta) is not dict or (finish is not None and type(finish) is not str):
                 return result('profile_error', 'invalid_delta_or_finish')
-            if set(delta) - {'role', 'content'} or finish in ('tool_calls', 'function_call'):
+            if finish == '':
+                return result('profile_error', 'empty_finish_reason')
+            if finish is not None and finish not in ('stop', 'length', 'content_filter'):
+                return result('unsupported', 'unsupported_finish_reason')
+            if set(delta) - {'role', 'content'}:
                 return result('unsupported', 'non_text_delta')
             if delta.get('role') not in (None, 'assistant'):
                 return result('profile_error', 'invalid_role')
