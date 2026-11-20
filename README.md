@@ -1,5 +1,7 @@
 # StreamContract
 
+[![CI](https://github.com/gedouluhui/stream-contract/actions/workflows/ci.yml/badge.svg)](https://github.com/gedouluhui/stream-contract/actions/workflows/ci.yml)
+
 **A network chunk is not an SSE event. Test what your client assumes.**
 
 Offline byte-boundary tests for streaming clients, with an **explicit expected result** and a replayable failing partition. No model calls, API keys, proxies or runtime dependencies.
