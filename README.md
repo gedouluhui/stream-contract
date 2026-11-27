@@ -89,3 +89,34 @@ Contributions: provide a minimal public/synthetic wire fixture, independent expe
 ## License
 
 MIT. Original code developed with AI assistance, backed by explicit counterexamples and review. Linked specifications/SDKs are references; no third-party implementation is bundled. No adoption, performance or full-protocol compliance claim is made.
+
+## Quickstart and support
+
+### Problem
+Test whether a streaming client incorrectly depends on network chunk boundaries by replaying explicit SSE expectations and failing partitions.
+
+### Install
+```sh
+python -m pip install .
+```
+
+### Success
+```sh
+python -m streamcontract demo --json demo-report.json
+```
+Expected: The correct collector passes and the intentionally broken decoder is rejected; exit 0.
+
+### Deliberate failure
+```sh
+python -m streamcontract check missing.sse --json check-report.json
+```
+Expected: The missing input is rejected with exit 2 and no success is claimed.
+
+### Evidence and coverage boundaries
+Evidence covers known SSE cases at every single cut, byte-at-a-time Unicode, incomplete endings, wrong types, budgets, multiple choices, replay, CLI exit codes, and an optional versioned SDK comparison. A pass covers only the supplied fixture and tested partitions, not all exponentially many partitions or live transport behavior.
+
+### Support status
+Version 0.1.2 supports Python 3.10+ and has no runtime dependencies. Local execution was verified on Python 3.12.3. The documented route is a source checkout; this README does not claim a PyPI release. Maintenance is best-effort with no SLA.
+
+### Limitations
+The audit is bounded to 65,536 input bytes and 512 cases by default. Timing, backpressure, reconnects, socket cancellation, tool calls, refusals, named events, and Responses API streams are not modeled. Adapters are trusted executable code.
