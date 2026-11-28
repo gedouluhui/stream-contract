@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-Only the current `world-class/v1` source line for **StreamContract 0.1.2** is considered for fixes. Older snapshots are unsupported. This is a best-effort project with no SLA, production support, or guarantee that every reported issue will receive a fix.
+Only the current `world-class/v1` source line for **StreamContract 0.1.3** is considered for fixes. Older snapshots are unsupported. This is a best-effort project with no SLA, production support, or guarantee that every reported issue will receive a fix.
 
 ## Reporting a vulnerability
 
