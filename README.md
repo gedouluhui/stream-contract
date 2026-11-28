@@ -65,7 +65,7 @@ If the OpenAI Python SDK is already installed:
 python scripts/check_openai_decoder.py
 ```
 
-This uses the SDK's **internal** `SSEDecoder.iter_bytes` interface and prints the exact version. In a local check of **openai 2.36.0**, a Unicode/CRLF fixture passed; the same valid SSE stream with a leading UTF-8 BOM returned no event instead of the expected event. The latter failed even as one whole chunk: it is a **framing compatibility difference**, not a boundary-dependent failure, not a claim about the live OpenAI service, and not an assertion about later SDK versions. The script does not require that the difference persist; a fixed SDK can pass both fixtures.
+This uses the SDK's **internal** `SSEDecoder.iter_bytes` interface and prints the exact version. In the historical [openai-decoder-2.36.0.json](docs/openai-decoder-2.36.0.json) local check of **openai 2.36.0**, a Unicode/CRLF fixture passed; the same valid SSE stream with a leading UTF-8 BOM returned no event instead of the expected event. The latter failed even as one whole chunk: it is a **framing compatibility difference**, not a boundary-dependent failure, not a claim about the live OpenAI service, and not an assertion about later SDK versions. The script does not require that the difference persist; a fixed SDK can pass both fixtures.
 
 No API request, OpenAI client initialization or credential lookup is performed by the comparison. The reference events are explicit literals; no success conclusion is borrowed from another decoder.
 
@@ -75,10 +75,10 @@ No API request, OpenAI client initialization or credential lookup is performed b
 python -m pip install --upgrade build setuptools wheel
 python scripts/verify.py
 python -m build --no-isolation
-python scripts/check_sdist.py dist/streamcontract-0.1.2.tar.gz
+python scripts/check_sdist.py dist/streamcontract-0.1.3.tar.gz
 ```
 
-Tests cover known SSE cases at every single cut, byte-at-a-time Unicode, incomplete endings, wrong types, budgets, multiple choices, unsupported tools, always-empty clients, replay, CLI exit codes and overwrite protection. Python 3.10+ syntax; local execution verified on Python 3.12.3. Optional SDK comparison is separate from the dependency-free suite.
+Tests cover known SSE cases at every single cut, byte-at-a-time Unicode, incomplete endings, wrong types, budgets, multiple choices, unsupported tools, always-empty clients, replay, CLI exit codes and overwrite protection. Python 3.10+ syntax; local execution verified on Python 3.12.3. Optional SDK comparison is separate from the dependency-free suite. See [current v0.1.3 validation](docs/validation-v0.1.3.md).
 
 For full provider API acceptance, use established tools such as [Open Responses acceptance tests](https://www.openresponses.org/compliance). For routing/translation use the appropriate gateway or SDK. StreamContract focuses on a small, explainable client fixture and counterexample, not replacing those projects.
 
@@ -91,3 +91,34 @@ Contributions: provide a minimal public/synthetic wire fixture, independent expe
 ## License
 
 MIT. Original code developed with AI assistance, backed by explicit counterexamples and review. Linked specifications/SDKs are references; no third-party implementation is bundled. No adoption, performance or full-protocol compliance claim is made.
+
+## Quickstart and support
+
+### Problem
+Test whether a streaming client incorrectly depends on network chunk boundaries by replaying explicit SSE expectations and failing partitions.
+
+### Install
+```sh
+python -m pip install .
+```
+
+### Success
+```sh
+python -m streamcontract demo --json demo-report.json
+```
+Expected: The correct collector passes and the intentionally broken decoder is rejected; exit 0.
+
+### Deliberate failure
+```sh
+python -m streamcontract check missing.sse --json check-report.json
+```
+Expected: The missing input is rejected with exit 2 and no success is claimed.
+
+### Evidence and coverage boundaries
+Evidence covers known SSE cases at every single cut, byte-at-a-time Unicode, incomplete endings, wrong types, budgets, multiple choices, replay, CLI exit codes, and an optional versioned SDK comparison. A pass covers only the supplied fixture and tested partitions, not all exponentially many partitions or live transport behavior.
+
+### Support status
+Version 0.1.3 supports Python 3.10+ and has no runtime dependencies. Local execution was verified on Python 3.12.3. The documented route is a source checkout; this README does not claim a PyPI release. Maintenance is best-effort with no SLA.
+
+### Limitations
+The audit is bounded to 65,536 input bytes and 512 cases by default. Timing, backpressure, reconnects, socket cancellation, tool calls, refusals, named events, and Responses API streams are not modeled. Adapters are trusted executable code.
