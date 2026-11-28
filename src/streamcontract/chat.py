@@ -1,5 +1,5 @@
 """Deliberately narrow Chat Completions TEXT profile, not full API compliance."""
-import json
+from .jsonutil import loads
 from .sse import parse_sse
 from .numbers import parse_float, parse_integer
 
@@ -13,7 +13,11 @@ def collect_chat(chunks) -> dict:
     done = False
 
     def result(status, diagnostic=None):
-        return {'status': status, 'choices': [choices[i].copy() for i in sorted(choices)],
+        return {'status': status,
+                'choices': [{'index': choices[i]['index'],
+                             'text': ''.join(choices[i]['text']),
+                             'finish_reason': choices[i]['finish_reason']}
+                            for i in sorted(choices)],
                 'usage': usage, 'diagnostic': diagnostic}
 
     try:
@@ -29,8 +33,8 @@ def collect_chat(chunks) -> dict:
             done = True
             continue
         try:
-            obj = json.loads(event['data'], parse_constant=_reject_constant,
-                             parse_float=parse_float, parse_int=parse_integer)
+            obj = loads(event['data'], parse_constant=_reject_constant,
+                        parse_float=parse_float, parse_int=parse_integer)
         except (ValueError, RecursionError):
             return result('profile_error', 'invalid_json')
         if type(obj) is not dict or obj.get('object') != 'chat.completion.chunk' or type(obj.get('choices')) is not list:
@@ -62,10 +66,10 @@ def collect_chat(chunks) -> dict:
             content = delta.get('content')
             if content is not None and type(content) is not str:
                 return result('profile_error', 'invalid_content')
-            item_out = choices.setdefault(index, {'index': index, 'text': '', 'finish_reason': None})
+            item_out = choices.setdefault(index, {'index': index, 'text': [], 'finish_reason': None})
             if item_out['finish_reason'] is not None and (content or finish is not None):
                 return result('profile_error', 'choice_after_finish')
-            item_out['text'] += content or ''
+            item_out['text'].append(content or '')
             if finish is not None:
                 item_out['finish_reason'] = finish
     if not done:
